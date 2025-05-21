@@ -1,23 +1,23 @@
 import React, { useState } from 'react';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { sendPasswordResetEmail } from 'firebase/auth';
 import { auth } from '../../../lib/firebase';
-import Link from 'next/link';
 
-export default function StaffLoginPage() {
+export default function StaffResetPasswordPage() {
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [success, setSuccess] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setSuccess('');
     setLoading(true);
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      // AuthContext will check Firestore for staff/admin role
+      await sendPasswordResetEmail(auth, email);
+      setSuccess('Password reset email sent! Please check your inbox.');
     } catch (err: any) {
-      setError('Invalid credentials or not a staff/admin');
+      setError(err.message || 'Failed to send reset email');
     } finally {
       setLoading(false);
     }
@@ -25,7 +25,7 @@ export default function StaffLoginPage() {
 
   return (
     <div className="max-w-md mx-auto mt-20 p-6 border rounded shadow">
-      <h2 className="text-xl font-bold mb-4">Staff/Admin Login</h2>
+      <h2 className="text-xl font-bold mb-4">Reset Password (Staff/Admin)</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="email"
@@ -35,22 +35,12 @@ export default function StaffLoginPage() {
           className="input input-bordered w-full"
           required
         />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-          className="input input-bordered w-full"
-          required
-        />
         <button type="submit" className="btn btn-primary w-full" disabled={loading}>
-          {loading ? 'Logging in...' : 'Login'}
+          {loading ? 'Sending...' : 'Send Password Reset Email'}
         </button>
       </form>
-      <div className="mt-4 text-sm text-center">
-        <Link href="/staff/reset-password" className="text-blue-600 hover:underline">Forgot password?</Link>
-      </div>
       {error && <div className="text-red-500 mt-2">{error}</div>}
+      {success && <div className="text-green-600 mt-2">{success}</div>}
     </div>
   );
 } 

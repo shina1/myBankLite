@@ -4,6 +4,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../../../lib/firebase';
 import Link from 'next/link';
 import MiniStatementPDF from '../../../components/customer/MiniStatementPDF';
+import DataExport from '../../../components/customer/DataExport';
 
 export default function CustomerAccountPage() {
   const { user, role, loading } = useAuth();
@@ -48,6 +49,7 @@ export default function CustomerAccountPage() {
         <div className="flex gap-4 mt-4">
           <Link href="/customer/transactions" className="btn btn-info btn-sm">View Transactions</Link>
           <MiniStatementPDF customerId={user.uid} />
+          <DataExport />
         </div>
       </div>
     </div>
